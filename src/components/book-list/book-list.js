@@ -3,7 +3,7 @@ import BookListItem from '../book-list-item';
 import {connect} from 'react-redux';
 
 import {withBookstoreService} from '../hoc';
-import {booksLoaded, bookRequested, booksError} from '../../actions';
+import {fetchBooks} from '../../actions';
 import {compose} from '../../utils';
 
 import './book-list.css';
@@ -13,18 +13,7 @@ import ErrorIndicator from "../error-indicator";
 class BookList extends Component {
 
     componentDidMount() {
-        // 1. receive data
-        const {
-            bookstoreService,
-            booksLoaded,
-            bookRequested,
-            booksError
-        } = this.props;
-        bookRequested();
-        bookstoreService.getBooks()
-            .then((data) => booksLoaded(data))
-            .catch((err) => booksError(err));
-
+        this.props.fetchBooks();
     }
 
     render() {
@@ -53,10 +42,10 @@ const mapStateToProps = ({books, loading, error}) => {
     return {books, loading, error};
 };
 
-const mapDispatchToProps = {
-    booksLoaded,
-    bookRequested,
-    booksError
+const mapDispatchToProps = (dispatch, {bookstoreService}) => {
+    return {
+        fetchBooks: fetchBooks(dispatch, bookstoreService)
+    }
 };
 
 export default compose(
